@@ -38,5 +38,5 @@ func run(ctx context.Context) error {
 	scraper := &app.ScraperClient{}
 	app := app.NewTimsDiscoverWeekly(scraper, spotify)
 
-	return app.ScrapeAlbums(ctx)
+	return app.CreatePlaylist(ctx)
 }

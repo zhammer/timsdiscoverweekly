@@ -37,10 +37,7 @@ func NewTimsDiscoverWeekly(scraper Scraper, spotify SpotifyGateway) *TimsDiscove
 	}
 }
 
-// Scrape the timstwitterlisteningparty listening party csv,
-// for any new albums, get the # of tracks, then save to our
-// local collection.
-func (t *TimsDiscoverWeekly) ScrapeAlbums(ctx context.Context) error {
+func (t *TimsDiscoverWeekly) CreatePlaylist(ctx context.Context) error {
 	listeningParties, err := t.scraper.GetListeningParties(ctx)
 	if err != nil {
 		return err
