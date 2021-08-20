@@ -15,7 +15,7 @@ type ScraperClient struct {
 
 var spotifyLinkRegex = regexp.MustCompile(`"https://open\.spotify\.com/album/(.+)"`)
 
-func GetListeningParties(ctx context.Context) ([]ListeningParty, error) {
+func (s *ScraperClient) GetListeningParties(ctx context.Context) ([]ListeningParty, error) {
 	resp, err := http.Get("https://raw.githubusercontent.com/matbroughty/timstwitterlisteningparty/master/data/time-slot-data.csv")
 	if err != nil {
 		return nil, err
