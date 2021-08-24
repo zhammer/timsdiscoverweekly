@@ -34,7 +34,7 @@ func (s *SpotifyClient) CreatePlaylist(ctx context.Context, input CreatePlaylist
 	if err != nil {
 		return nil, fmt.Errorf("error getting current user: %w", err)
 	}
-	return s.client.CreatePlaylistForUser(ctx, account.ID, input.Name, "", true, false)
+	return s.client.CreatePlaylistForUser(ctx, account.ID, input.Name, input.Description, true, false)
 }
 
 func (s *SpotifyClient) AddTracksToPlaylist(ctx context.Context, playlistID spotify.ID, trackIDs []spotify.ID) error {
