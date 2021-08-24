@@ -22,16 +22,22 @@ type SpotifyGateway interface {
 	AddTracksToPlaylist(ctx context.Context, playlistID spotify.ID, trackIDs []spotify.ID) error
 }
 
+type Archiver interface {
+	Archive(ctx context.Context, playlist spotify.FullPlaylist, tracks []spotify.SimpleTrack, parties []ListeningParty) error
+}
+
 type TimsDiscoverWeekly struct {
-	scraper Scraper
-	spotify SpotifyGateway
+	scraper  Scraper
+	spotify  SpotifyGateway
+	archiver Archiver
 
 	playlistLength int
 }
 
-func NewTimsDiscoverWeekly(scraper Scraper, spotify SpotifyGateway) *TimsDiscoverWeekly {
+func NewTimsDiscoverWeekly(spotify SpotifyGateway) *TimsDiscoverWeekly {
 	return &TimsDiscoverWeekly{
-		scraper:        scraper,
+		scraper:        &ScraperClient{},
+		archiver:       &ArchiverClient{},
 		spotify:        spotify,
 		playlistLength: 30,
 	}
@@ -55,17 +61,25 @@ func (t *TimsDiscoverWeekly) CreatePlaylist(ctx context.Context) error {
 		return err
 	}
 
-	var trackIDs []spotify.ID
+	var tracks []spotify.SimpleTrack
 	for _, album := range albums {
-		track := randomTrack(*album)
+		tracks = append(tracks, randomTrack(*album))
+	}
+	var trackIDs []spotify.ID
+	for _, track := range tracks {
 		trackIDs = append(trackIDs, track.ID)
 	}
 
-	playlist, err := t.spotify.CreatePlaylist(ctx, fromTime(time.Now().UTC()))
+	playlistInput := fromTime(time.Now().UTC())
+	playlist, err := t.spotify.CreatePlaylist(ctx, playlistInput)
 	if err != nil {
 		return err
 	}
 	if err := t.spotify.AddTracksToPlaylist(ctx, playlist.ID, trackIDs); err != nil {
+		return err
+	}
+
+	if err := t.archiver.Archive(ctx, *playlist, tracks, listeningParties); err != nil {
 		return err
 	}
 
@@ -75,9 +89,7 @@ func (t *TimsDiscoverWeekly) CreatePlaylist(ctx context.Context) error {
 func shuffleListeningParties(listeningParties []ListeningParty) []ListeningParty {
 	// copy array
 	var out []ListeningParty
-	for _, lp := range listeningParties {
-		out = append(out, lp)
-	}
+	out = append(out, listeningParties...)
 
 	rand.Shuffle(len(out), func(i, j int) { out[i], out[j] = out[j], out[i] })
 

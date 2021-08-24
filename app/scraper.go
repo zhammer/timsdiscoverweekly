@@ -42,7 +42,10 @@ func pluckListeningParties(ctx context.Context, body io.Reader) ([]ListeningPart
 			zerolog.Ctx(ctx).Debug().Msgf("Encountered spotify album link in unexpected format: '%s'", spotifyLink)
 			continue
 		}
-		listeningParties = append(listeningParties, ListeningParty{AlbumID: groups[1]})
+		listeningParties = append(listeningParties, ListeningParty{
+			AlbumID:   groups[1],
+			ReplayURL: record[4],
+		})
 	}
 	return listeningParties, nil
 }

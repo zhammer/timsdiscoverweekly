@@ -40,8 +40,7 @@ func main() {
 
 func generatePlaylist(c *cli.Context) error {
 	spotify := app.NewSpotifyClient(spotify.New(auth_http_client.New(c.String("spotify-access-token"))))
-	scraper := &app.ScraperClient{}
-	app := app.NewTimsDiscoverWeekly(scraper, spotify)
+	app := app.NewTimsDiscoverWeekly(spotify)
 
 	return app.CreatePlaylist(c.Context)
 }

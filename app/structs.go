@@ -17,5 +17,6 @@ func fromTime(time time.Time) CreatePlaylistInput {
 
 // listening parties scraped from the timstwitterlisteningparty repo
 type ListeningParty struct {
-	AlbumID string
+	AlbumID   string
+	ReplayURL string
 }

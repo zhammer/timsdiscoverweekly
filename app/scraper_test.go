@@ -17,7 +17,8 @@ func TestPluckListeningParties(t *testing.T) {
 	assert.NoError(t, err)
 	assert.ElementsMatch(t, listeningParties, []ListeningParty{
 		{
-			AlbumID: "1c7eigkoEcDAKKhkajY3Br",
+			AlbumID:   "1c7eigkoEcDAKKhkajY3Br",
+			ReplayURL: "https://timstwitterlisteningparty.com/pages/replay/feed_873.html",
 		},
 	})
 }
