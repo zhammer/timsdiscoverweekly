@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/zhammer/stride-songs/pkg/chunk"
 	"github.com/zmb3/spotify/v2"
 )
 
@@ -12,7 +13,20 @@ type SpotifyClient struct {
 }
 
 func (s *SpotifyClient) GetAlbums(ctx context.Context, ids []spotify.ID) ([]*spotify.FullAlbum, error) {
-	return s.client.GetAlbums(ctx, ids)
+	const maxAlbumIDs = 20
+
+	var out []*spotify.FullAlbum
+	chunks := chunk.Ranges(len(ids), maxAlbumIDs)
+	for _, chunk := range chunks {
+		ids := ids[chunk.Start:chunk.End]
+		albums, err := s.client.GetAlbums(ctx, ids)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, albums...)
+	}
+
+	return out, nil
 }
 
 func (s *SpotifyClient) CreatePlaylist(ctx context.Context, input CreatePlaylistInput) (*spotify.FullPlaylist, error) {
