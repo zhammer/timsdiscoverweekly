@@ -23,8 +23,6 @@ jobs:
         SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
     - name: generate playlist
       run: go run ./cmd/
-      env:
-        SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "Generate weekly playlist"
