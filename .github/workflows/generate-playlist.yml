@@ -16,6 +16,7 @@ jobs:
     - name: get access token
       run: echo "SPOTIFY_ACCESS_TOKEN=$(scripts/get-access-token.sh)" >> $GITHUB_ENV
     - name: generate playlist
+      run: go run ./cmd/
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "Generate weekly playlist"
