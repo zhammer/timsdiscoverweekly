@@ -21,12 +21,12 @@ func (s *ScraperClient) GetListeningParties(ctx context.Context) ([]ListeningPar
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Received unexpected status code (%d) when downloading listening parties file", resp.StatusCode)
+		return nil, fmt.Errorf("received unexpected status code (%d) when downloading listening parties file", resp.StatusCode)
 	}
 
 	records, err := csv.NewReader(resp.Body).ReadAll()
 	if err != nil {
-		return nil, fmt.Errorf("Error parsing listening party csv: %w", err)
+		return nil, fmt.Errorf("error parsing listening party csv: %w", err)
 	}
 
 	var listeningParties []ListeningParty
