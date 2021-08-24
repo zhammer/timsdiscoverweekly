@@ -2,13 +2,13 @@ package app
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/zmb3/spotify/v2"
 )
 
 type SpotifyClient struct {
 	client *spotify.Client
-	userID string
 }
 
 func (s *SpotifyClient) GetAlbums(ctx context.Context, ids []spotify.ID) ([]*spotify.FullAlbum, error) {
@@ -16,7 +16,11 @@ func (s *SpotifyClient) GetAlbums(ctx context.Context, ids []spotify.ID) ([]*spo
 }
 
 func (s *SpotifyClient) CreatePlaylist(ctx context.Context, input CreatePlaylistInput) (*spotify.FullPlaylist, error) {
-	return s.client.CreatePlaylistForUser(ctx, s.userID, input.Name, "", true, false)
+	account, err := s.client.CurrentUser(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error getting current user: %w", err)
+	}
+	return s.client.CreatePlaylistForUser(ctx, account.ID, input.Name, "", true, false)
 }
 
 func (s *SpotifyClient) AddTracksToPlaylist(ctx context.Context, playlistID spotify.ID, trackIDs []spotify.ID) error {
@@ -24,7 +28,7 @@ func (s *SpotifyClient) AddTracksToPlaylist(ctx context.Context, playlistID spot
 	return err
 }
 
-func NewSpotifyClient(client *spotify.Client, userID string) *SpotifyClient {
+func NewSpotifyClient(client *spotify.Client) *SpotifyClient {
 	return &SpotifyClient{
 		client: client,
 	}

@@ -23,24 +23,14 @@ func main() {
 
 	c := cli.App{
 		Name: "timsdiscoverweekly",
-		Commands: []*cli.Command{
-			{
-				Name: "generate-playlist",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:     "spotify-user-id",
-						EnvVars:  []string{"SPOTIFY_USER_ID"},
-						Required: true,
-					},
-					&cli.StringFlag{
-						Name:     "spotify-bearer-token",
-						EnvVars:  []string{"SPOTIFY_BEARER_TOKEN"},
-						Required: true,
-					},
-				},
-				Action: generatePlaylist,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "spotify-access-token",
+				EnvVars:  []string{"SPOTIFY_ACCESS_TOKEN"},
+				Required: true,
 			},
 		},
+		Action: generatePlaylist,
 	}
 
 	if err := c.RunContext(ctx, os.Args); err != nil {
@@ -49,10 +39,7 @@ func main() {
 }
 
 func generatePlaylist(c *cli.Context) error {
-	spotify := app.NewSpotifyClient(
-		spotify.New(auth_http_client.New(c.String("spotify-bearer-token"))),
-		c.String("spotify-user-id"),
-	)
+	spotify := app.NewSpotifyClient(spotify.New(auth_http_client.New(c.String("spotify-access-token"))))
 	scraper := &app.ScraperClient{}
 	app := app.NewTimsDiscoverWeekly(scraper, spotify)
 
