@@ -79,7 +79,7 @@ func (t *TimsDiscoverWeekly) CreatePlaylist(ctx context.Context) error {
 		return err
 	}
 
-	if err := t.archiver.Archive(ctx, *playlist, tracks, listeningParties); err != nil {
+	if err := t.archiver.Archive(ctx, *playlist, tracks, selectedParties); err != nil {
 		return err
 	}
 
