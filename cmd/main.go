@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
+	"os"
 	"timsdiscoverweekly/app"
 	"timsdiscoverweekly/pkg/auth_http_client"
 
-	"github.com/kelseyhightower/envconfig"
 	"github.com/rs/zerolog"
+	"github.com/urfave/cli/v2"
 	"github.com/zmb3/spotify/v2"
 )
 
@@ -20,23 +21,40 @@ func main() {
 	ctx := context.Background()
 	ctx = logger.WithContext(ctx)
 
-	if err := run(ctx); err != nil {
+	c := cli.App{
+		Name: "timsdiscoverweekly",
+		Commands: []*cli.Command{
+			{
+				Name: "generate-playlist",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "spotify-user-id",
+						EnvVars:  []string{"SPOTIFY_USER_ID"},
+						Required: true,
+					},
+					&cli.StringFlag{
+						Name:     "spotify-bearer-token",
+						EnvVars:  []string{"SPOTIFY_BEARER_TOKEN"},
+						Required: true,
+					},
+				},
+				Action: generatePlaylist,
+			},
+		},
+	}
+
+	if err := c.RunContext(ctx, os.Args); err != nil {
 		logger.Fatal().Msg(err.Error())
 	}
 }
 
-func run(ctx context.Context) error {
-	cfg := Config{}
-	if err := envconfig.Process("", &cfg); err != nil {
-		return err
-	}
-
+func generatePlaylist(c *cli.Context) error {
 	spotify := app.NewSpotifyClient(
-		spotify.New(auth_http_client.New(cfg.SpotifyBearerToken)),
-		cfg.SpotifyUserID,
+		spotify.New(auth_http_client.New(c.String("spotify-bearer-token"))),
+		c.String("spotify-user-id"),
 	)
 	scraper := &app.ScraperClient{}
 	app := app.NewTimsDiscoverWeekly(scraper, spotify)
 
-	return app.CreatePlaylist(ctx)
+	return app.CreatePlaylist(c.Context)
 }
