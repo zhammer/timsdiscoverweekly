@@ -3,7 +3,7 @@ name: Generate Playlist
 on:
   schedule:
     # 6am UTC monday
-    - '0 6 * * 1'
+    - cron: '0 6 * * 1'
 
 jobs:
   build:
