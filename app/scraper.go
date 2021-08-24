@@ -39,7 +39,7 @@ func pluckListeningParties(ctx context.Context, body io.Reader) ([]ListeningPart
 		spotifyLink := record[7]
 		groups := spotifyLinkRegex.FindStringSubmatch(spotifyLink)
 		if len(groups) != 2 {
-			zerolog.Ctx(ctx).Warn().Msgf("Encountered spotify album link in unexpected format: '%s'", spotifyLink)
+			zerolog.Ctx(ctx).Debug().Msgf("Encountered spotify album link in unexpected format: '%s'", spotifyLink)
 			continue
 		}
 		listeningParties = append(listeningParties, ListeningParty{AlbumID: groups[1]})
